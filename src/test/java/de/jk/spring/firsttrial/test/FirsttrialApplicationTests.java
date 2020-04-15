@@ -219,7 +219,4 @@ public class FirsttrialApplicationTests {
 		}
     }
 	
-	//Test for GIT
-	//Test changed twice
-	//Test changed 3rd time
 }
