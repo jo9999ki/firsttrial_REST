@@ -137,3 +137,11 @@ http://localhost:8080/actuator/httptrace -&gt; Detailed infos single http reques
 <br> Change password
 <br> Add prometheus as data source: http://localhost:9090
 <br> Add panels for imported data
+
+#Links
+
+* [Monitoring Using Spring Boot 2.0, Prometheus, and Grafana, Part 2 — Exposing Metrics, DZone](https://dzone.com/articles/monitoring-using-spring-boot-2-prometheus-and-graf)
+* [Set Up and Integrate Prometheus With Grafana for Monitoring](https://dzone.com/articles/monitoring-using-spring-boot-20-prometheus-and-gra)
+* [Spring Boot Actuator: Production-ready Features](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html)
+* [Micrometer: Spring Boot 2's new application metrics collector](https://spring.io/blog/2018/03/16/micrometer-spring-boot-2-s-new-application-metrics-collector)
+* [Micrometer Documentation](https://micrometer.io/docs)
