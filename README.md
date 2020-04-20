@@ -1,8 +1,9 @@
 # Application firsttrial_REST
 
 This is an Spring Boot 2 Project for Java 11 and Maven 3.3+ containing Micrometer metrics cabilities with Prometheus and Graphana.
+The code contains best case approaches for fast project adaption.
 
-It part of a spring boot tutorial containing follwing chapters
+Its part of a spring boot tutorial containing follwing chapters
 1. Create Spring boot 2 project with H2 database, Data Model, Hibernate Repository
 2. Add internal CRUD service with basic test capability
 3. Create REST Controller, add error output and error handler, create JUnit test for REST controller
