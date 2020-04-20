@@ -66,7 +66,7 @@ http://localhost:8080/actuator/loggers -&gt; Overview of all loggers<br>
 http://localhost:8080/actuator/httptrace -&gt; Detailed infos single http requests<br>
 
 ## Create addtional metrics entries "method_timed_ ..." for REST endpoints
- <br>Enhance methods in REST controller with Annotation @Timed
+* Enhance methods in REST controller with Annotation @Timed
  <br>Check for new entries "method_timed_seconds_..." in endpoint prometheus
  <br>Check for new entries in endpoint metrics 
  <br> http://localhost:8080/actuator/metrics/method.timed?tag=method:getAllcustomersWithPagination
@@ -104,10 +104,33 @@ http://localhost:8080/actuator/httptrace -&gt; Detailed infos single http reques
         }
 </pre></code>
 
-<br> Check health endpoint: http://localhost:8080/actuator/health
+<br> Run application and check content changes in health endpoint: http://localhost:8080/actuator/health
 
+## Monitor metrics with Prometheus and Graphana
+* Install and use Prometheus server
+<br> See instructions in https://dzone.com/articles/monitoring-using-spring-boot-20-prometheus-and-gra
+<br> Download installation package from https://prometheus.io/download/ and extract in local directory
+<br> Update config file prometheus.yml in following part:
+<pre><code>
+	scrape_configs:
+	  # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+	  - job_name: 'prometheus'
 
+		# metrics_path defaults to '/metrics'
+		metrics_path: /actuator/prometheus
+		# scheme defaults to 'http'.
 
-
-
+		static_configs:
+		- targets: ['localhost:8080']
+</pre></code>		
+<br> start prometheus server (prometheus.exe)
+<br> Open Web site in browser http://localhost:9090 and create graphs
 			
+* Install and user Graphana
+<br> See instructions in https://dzone.com/articles/monitoring-using-spring-boot-20-prometheus-and-gra
+<br> Download from https://grafana.com/grafana/download?platform=windows and extract in local directory
+<br> Start server (grafana-server.exe)
+<br> open web site in browser http://localhost:3000
+<br> Change password
+<br> Add prometheus as data source: http://localhost:9090
+<br> Add panels for imported data
