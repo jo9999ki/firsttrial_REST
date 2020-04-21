@@ -8,7 +8,7 @@ Its part of a spring boot tutorial containing follwing chapters
 2. Add internal CRUD service with basic test capability
 3. Create REST Controller, add error output and error handler, create JUnit test for REST controller
 4. Add swagger (OpenAPI) documentation for REST controller
-5. Add Spring Boot Actuator with Micrometer Metrics, local Prometheus and Graphana severs and customized health check
+5. Add Spring Boot Actuator with Micrometer Metrics, local Prometheus and Graphana severs and customized health check, log requests and response with Logbook
 
 The current repository contains full code with latest enhancements
 
@@ -68,13 +68,13 @@ http://localhost:8080/actuator/metrics/http.server.requests?tag=uri:/customers -
 http://localhost:8080/actuator/loggers -&gt; Overview of all loggers<br>
 http://localhost:8080/actuator/httptrace -&gt; Detailed infos single http requests<br>
 
-## Create addtional metrics entries "method_timed_ ..." for REST endpoints
+### Create addtional metrics entries "method_timed_ ..." for REST endpoints
 * Enhance methods in REST controller with Annotation @Timed
  <br>Check for new entries "method_timed_seconds_..." in endpoint prometheus
  <br>Check for new entries in endpoint metrics 
  <br> http://localhost:8080/actuator/metrics/method.timed?tag=method:getAllcustomersWithPagination
  
-## Step 2: Create customized health check
+## Create customized health check
 * Code enhancements
 <br> Create new package "... health"
 <br> Create new class
@@ -137,6 +137,23 @@ http://localhost:8080/actuator/httptrace -&gt; Detailed infos single http reques
 <br> Change password
 <br> Add prometheus as data source: http://localhost:9090
 <br> Add panels for imported data
+
+## HTTP Request and Response Logging with Logbook
+* Add dependency in POM file
+<pre><code>
+	&lt;dependency&gt;
+	   &lt;groupId&gt;org.zalando&lt;/groupId&gt;
+	   &lt;artifactId&gt;logbook-spring-boot-starter&lt;/artifactId&gt;
+	   &lt;version&gt;2.0.0&lt;/version&gt;
+	&lt;/dependency&gt;
+</pre></code>q
+* Add configuration to enable request and response logging and exclude not required endpoints
+<pre><code>
+logging.level.org.springframework.web=ERROR
+#spring.http.log-request-details=true
+logbook.write.level=ERROR
+logbook.exclude=//actuator/info, //actuator/health, /webjars/**, /swagger-resources/**, /swagger-ui.html, /v2/api-docs, /error, /csrf
+</pre></code>
 
 # Links
 * [Spring Boot Actuator: Production-ready Features](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html)
