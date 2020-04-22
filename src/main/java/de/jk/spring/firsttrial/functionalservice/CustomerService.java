@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,8 +27,11 @@ public class CustomerService {
 	@Autowired
     CustomerRepository repository;
      
-    public List<CustomerEntity> getAllCustomers(Integer pageNo, Integer pageSize, String sortBy)
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	
+	public List<CustomerEntity> getAllCustomers(Integer pageNo, Integer pageSize, String sortBy)
     {
+
 
     	Pageable paging = PageRequest.of(pageNo, pageSize, Sort.by(sortBy));
     	 
@@ -74,7 +79,8 @@ public class CustomerService {
 
     public CustomerEntity createOrUpdateCustomer(CustomerEntity entity) throws RecordNotFoundException 
     {
-        Optional<CustomerEntity> customer = repository.findById(entity.getId());
+        logger.debug("Start method");
+    	Optional<CustomerEntity> customer = repository.findById(entity.getId());
          
         if(customer.isPresent()) 
         {
