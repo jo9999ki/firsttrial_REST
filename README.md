@@ -8,7 +8,10 @@ Its part of a spring boot tutorial containing follwing chapters
 2. Add internal CRUD service with basic test capability
 3. Create REST Controller, add error output and error handler, create JUnit test for REST controller
 4. Add swagger (OpenAPI) documentation for REST controller
-5. Add Spring Boot Actuator with Micrometer Metrics, local Prometheus and Graphana severs and customized health check, log requests and response with Logbook
+5. Analyzability Features
+<br> --> Add Spring Boot Actuator with Micrometer Metrics - enables monitoring capabilities with Prometheus and Graphana severs - and add customized health check
+<br> --> Log requests and response with Logbook
+<br> --> Tracing for internal service walkthroughs and distributed service calls with Spring Cloud Sleuth
 
 The current repository contains full code with latest enhancements
 
