@@ -287,12 +287,32 @@ docker run -d -p 8080:8080 --rm --name &lt;tagname&gt; &lt;username&gt;/&lt;repo
 e.g. docker run -d -p 8080:8080 --rm --name v1 jo9999ki/firsttrial:v1 
 </pre></code>		
 <br>Test swagger file: http://localhost:8080/swagger-ui.html
+<br> open local session for installed image: docker run -ti --entrypoint /bin/sh jo9999ki/firsttrial:v1
 <br>Delete deployment: docker kill <tagname> -> docker kill v1
 <br>
 * Push image to Docker hub repository
 <br> Login in with repository user: "docker login - u <username>", e.g. "docker login -u jo9999ki" --> enter password
 <br> Push image: "docker push <username>/<repositoryname>:<tagname>", e.g. "docker push jo9999ki/firsttrial:v1"
-			
+
+## Optimize image size and rebuild
+First docker image has a size of 686 MB due to jdk 11 image as basis (no small jdk 11 alpine image available)
+<br> Check image size after build: "docker image ls"
+<pre><code>
+REPOSITORY                           TAG                 IMAGE ID            CREATED             SIZE
+jo9999ki/firsttrial                  v1                  a771f7445108        4 hours ago         686MB
+openjdk                              11-jdk              f5de33dc9079        6 days ago          627MB
+gcr.io/k8s-minikube/kicbase          v0.0.8              11589cdc9ef4        5 weeks ago         964MB
+docker/desktop-storage-provisioner   v1.0                605a0f683b7b        8 weeks ago         33.1MB
+k8s.gcr.io/kube-proxy                v1.15.5             cbd7f21fec99        6 months ago        82.4MB
+k8s.gcr.io/kube-apiserver            v1.15.5             e534b1952a0d        6 months ago        207MB
+k8s.gcr.io/kube-controller-manager   v1.15.5             1399a72fa1a9        6 months ago        159MB
+k8s.gcr.io/kube-scheduler            v1.15.5             fab2dded59dd        6 months ago        81.1MB
+docker/kube-compose-controller       v0.4.23             a8c3d87a58e7        10 months ago       35.3MB
+docker/kube-compose-api-server       v0.4.23             f3591b2cb223        10 months ago       49.9MB
+k8s.gcr.io/coredns                   1.3.1               eb516548c180        15 months ago       40.3MB
+k8s.gcr.io/etcd                      3.3.10              2c4adeb21b4f        17 months ago       258MB
+k8s.gcr.io/pause                     3.1                 da86e6ba6ca1        2 years ago         742kB			
+</pre></code>
 
 # Links
 * [Spring Boot Actuator: Production-ready Features](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html)
