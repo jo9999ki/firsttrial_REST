@@ -8,10 +8,14 @@ Its part of a spring boot tutorial containing follwing chapters
 2. Add internal CRUD service with basic test capability
 3. Create REST Controller, add error output and error handler, create JUnit test for REST controller
 4. Add swagger (OpenAPI) documentation for REST controller
-5. Analyzability Features
+5. Analyzability Features (current repository)
 <br> --> Add Spring Boot Actuator with Micrometer Metrics - enables monitoring capabilities with Prometheus and Graphana severs - and add customized health check
 <br> --> Log requests and response with Logbook
 <br> --> Tracing for internal service walkthroughs and distributed service calls with Spring Cloud Sleuth
+6. Cloud-readiness - create and deploy docker image (current repository)
+<br> --> add customized Dockerfile to project
+<br> --> build image, test with local Docker desktop and push image to Dockerhub
+<br> --> deploy image on local minikube (Kubernetes with one node)
 
 The current repository contains full code with latest enhancements
 
@@ -246,9 +250,55 @@ public class TestController
 </pre></code>
 <br>Log entries of calling service and called service contain same trace id c3f1723c45e00d41.
 
+## Build Docker image, run in docker desktop and push to docker hub 
+* Install and test Docker Desktop for Windows:
+<br> download docker desktop from https://hub.docker.com/editions/community/docker-ce-desktop-windows
+<br> check docker in console: docker --version
+<br>start docker desktop
+<br>
+* Activate Hyper-V properties, if not already done by Docker installation. Same needed after Virtual Box usage
+<br> Open Windows / Apps&Features Activate / Deactivate Windows features
+<br> Activate Hyper-V --> Hyper-V-Services + Hyper-V-Hypervisor	
+<br>		
+* Create community docker repository on Docker Hub
+<br> Create account in https://hub.docker.com/ and confirm email by mail
+<br> create private docker repository (one private repository possible for community account)
+<br> copy push command after creation: 
+<pre><code>
+docker push &lt;username&gt;/&lt;repositoryname&gt;:&lt;tagname&gt;, 
+e.g. docker push jo9999ki/firsttrial:tagname
+</pre></code>
+<br>
+* Create a simple docker file "Dockerfile" in application root folder
+<pre><code>
+FROM openjdk:11-jdk 
+<br>
+ADD target/firsttrial-0.0.1-SNAPSHOT.jar app.jar 
+<br>
+ENTRYPOINT exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar 
+</pre></code>
+<br>
+* Build image from docker file: docker "build <username>/<repositoryname>:<tagname> ." e.g. "docker build --tag jo9999ki/firsttrial:v1 ."
+<br>(Take care, that " ." is included)
+<br>
+* Deploy and test image on Docker Desktop -internal and external port = 8080
+<pre><code>
+docker run -d -p 8080:8080 --rm --name &lt;tagname&gt; &lt;username&gt;/&lt;repositoryname&gt;:&lt;tagname&gt;
+e.g. docker run -d -p 8080:8080 --rm --name v1 jo9999ki/firsttrial:v1 
+</pre></code>		
+<br>Test swagger file: http://localhost:8080/swagger-ui.html
+<br>Delete deployment: docker kill <tagname> -> docker kill v1
+<br>
+* Push image to Docker hub repository
+<br> Login in with repository user: "docker login - u <username>", e.g. "docker login -u jo9999ki" --> enter password
+<br> Push image: "docker push <username>/<repositoryname>:<tagname>", e.g. "docker push jo9999ki/firsttrial:v1"
+			
+
 # Links
 * [Spring Boot Actuator: Production-ready Features](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html)
 * [Micrometer: Spring Boot 2's new application metrics collector](https://spring.io/blog/2018/03/16/micrometer-spring-boot-2-s-new-application-metrics-collector)
 * [Micrometer Documentation](https://micrometer.io/docs)
 * [Zalando Logbook for logging request and response content](https://github.com/zalando/logbook)
 * [Spring Cloud Sleuth](https://cloud.spring.io/spring-cloud-sleuth/reference/html/)
+* [Install Docker for windows](https://docs.docker.com/docker-for-windows/)
+* [How to used docker for windows](https://docs.docker.com/machine/drivers/hyper-v/#usage)
