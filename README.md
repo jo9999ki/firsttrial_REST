@@ -428,3 +428,6 @@ e.g. docker run -d -p 8080:8080 --rm --name v1 jo9999ki/firsttrial:v1
 * [Spring Cloud Sleuth](https://cloud.spring.io/spring-cloud-sleuth/reference/html/)
 * [Install Docker for windows](https://docs.docker.com/docker-for-windows/)
 * [How to used docker for windows](https://docs.docker.com/machine/drivers/hyper-v/#usage)
+* [Docker file reference](https://docs.docker.com/engine/reference/builder/)
+* [Tutorials Kubernetes](https://kubernetes.io/de/docs/tutorials/#grundlagen)
+* [Install Minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/)
