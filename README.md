@@ -301,7 +301,7 @@ e.g. docker run -d -p 8080:8080 --rm --name v1 jo9999ki/firsttrial:v1
 <br> Login in with repository user: "docker login - u <username>", e.g. "docker login -u jo9999ki" --> enter password
 <br> Push image: "docker push <username>/<repositoryname>:<tagname>", e.g. "docker push jo9999ki/firsttrial:v1"
 
-##Install minikube and deploy image
+## Install minikube and deploy image
 ### Reasons to install minikube on virtual box
 * Kubernetes inside Docker Desktop does not include dashboard
 * Minikube installation for driver docker has a bug, that after installing the service it cannot be reached outside minikube (connection refused)
