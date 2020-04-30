@@ -198,10 +198,12 @@ http://localhost:8080/actuator/httptrace -&gt; Detailed infos single http reques
 </pre></code>
 * Sleuth requires an application name (here typically logical service name), which must be added to application.properties:
 <br>--> spring.application.name=customer service
-<br>
+
 * To avoid conflicts, existing logging patterns migth be to be removed from application.properties. Otherwise logging might not be enhanced by Sleuth!!!
 <br> -->remove or deactivate #logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} - %msg%n 
+
 * Enhance Exception method for input validation in CustomExceptionHandler by error logging
+
 * Finally start application and run POST method in Swagger UI with invalid mail address
 <br> Example:
 <pre><code>
@@ -209,7 +211,7 @@ http://localhost:8080/actuator/httptrace -&gt; Detailed infos single http reques
 	2020-04-22 20:22:08.769 ERROR [customer service,eea0fa6b27939e0e,eea0fa6b27939e0e,false] 6256 --- [nio-8080-exec-2] d.j.s.f.e.CustomExceptionHandler         : Input validation error: error code: Email error message: keine g&#252;ltige E-Mail-Adresse field: email
 	2020-04-22 20:22:08.784  INFO [customer service,eea0fa6b27939e0e,eea0fa6b27939e0e,false] 6256 --- [nio-8080-exec-2] org.zalando.logbook.Logbook              : {&quot;origin&quot;:&quot;local&quot;,&quot;type&quot;:&quot;response&quot;,&quot;correlation&quot;:&quot;f56746d5-bb35-47ed-bda3-d4da00bd14ea&quot;,&quot;duration&quot;:62,&quot;protocol&quot;:&quot;HTTP/1.1&quot;,&quot;status&quot;:400,&quot;headers&quot;:{&quot;Connection&quot;:[&quot;close&quot;],&quot;Content-Type&quot;:[&quot;application/json&quot;],&quot;Date&quot;:[&quot;Wed, 22 Apr 2020 18:22:08 GMT&quot;],&quot;trace-id&quot;:[&quot;eea0fa6b27939e0e&quot;],&quot;Transfer-Encoding&quot;:[&quot;chunked&quot;]},&quot;body&quot;:{&quot;errorList&quot;:[{&quot;timestamp&quot;:&quot;2020-04-22T18:22:08.769106500Z&quot;,&quot;code&quot;:&quot;Email&quot;,&quot;message&quot;:&quot;keine g&#195;&#188;ltige E-Mail-Adresse&quot;,&quot;parameter&quot;:&quot;email&quot;,&quot;details&quot;:null}]}}
 </pre></code>
-<br>
+
 ## HTTP Distributed tracing in multiple services with Spring Boot Sleuth
 * Same traceid will be used if request is forwarded to other services using sleuth when using RestTemplate client in calling service. Add new rest controller to simulate both sides:
 <pre><code>
@@ -255,7 +257,7 @@ public class TestController
 <br> download docker desktop from https://hub.docker.com/editions/community/docker-ce-desktop-windows
 <br> check docker in console: docker --version
 <br>start docker desktop
-<br>
+
 * Activate Hyper-V properties, if not already done by Docker installation. Same needed after Virtual Box usage
 <br> Open Windows / Apps&Features Activate / Deactivate Windows features
 <br> Activate Hyper-V --> Hyper-V-Services + Hyper-V-Hypervisor	
