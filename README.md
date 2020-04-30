@@ -271,15 +271,20 @@ e.g. docker push jo9999ki/firsttrial:tagname
 <br>
 * Create a simple docker file "Dockerfile" in application root folder
 <pre><code>
-FROM openjdk:11-jdk 
+FROM adoptopenjdk/openjdk11:alpine-jre
 <br>
-ADD target/firsttrial-0.0.1-SNAPSHOT.jar app.jar 
+ARG JAR_FILE=./target/*.jar
+<br>
+COPY ${JAR_FILE} /app.jar
 <br>
 ENTRYPOINT exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar 
 </pre></code>
+<br> Major impact for created image is the jdk image used in FROM ... statement (here reduced from 686 to 204 MB). See alternatives here: https://www.dropbox.com/s/19mhkxmix8iztx2/openjdk_tags_2019-06-24.csv?dl=0
 <br>
 * Build image from docker file: docker "build <username>/<repositoryname>:<tagname> ." e.g. "docker build --tag jo9999ki/firsttrial:v1 ."
 <br>(Take care, that " ." is included)
+<br>
+* Check image size for created image: docker image ls
 <br>
 * Deploy and test image on Docker Desktop -internal and external port = 8080
 <pre><code>
@@ -294,26 +299,126 @@ e.g. docker run -d -p 8080:8080 --rm --name v1 jo9999ki/firsttrial:v1
 <br> Login in with repository user: "docker login - u <username>", e.g. "docker login -u jo9999ki" --> enter password
 <br> Push image: "docker push <username>/<repositoryname>:<tagname>", e.g. "docker push jo9999ki/firsttrial:v1"
 
-## Optimize image size and rebuild
-First docker image has a size of 686 MB due to jdk 11 image as basis (no small jdk 11 alpine image available)
-<br> Check image size after build: "docker image ls"
-<pre><code>
-REPOSITORY                           TAG                 IMAGE ID            CREATED             SIZE
-jo9999ki/firsttrial                  v1                  a771f7445108        4 hours ago         686MB
-openjdk                              11-jdk              f5de33dc9079        6 days ago          627MB
-gcr.io/k8s-minikube/kicbase          v0.0.8              11589cdc9ef4        5 weeks ago         964MB
-docker/desktop-storage-provisioner   v1.0                605a0f683b7b        8 weeks ago         33.1MB
-k8s.gcr.io/kube-proxy                v1.15.5             cbd7f21fec99        6 months ago        82.4MB
-k8s.gcr.io/kube-apiserver            v1.15.5             e534b1952a0d        6 months ago        207MB
-k8s.gcr.io/kube-controller-manager   v1.15.5             1399a72fa1a9        6 months ago        159MB
-k8s.gcr.io/kube-scheduler            v1.15.5             fab2dded59dd        6 months ago        81.1MB
-docker/kube-compose-controller       v0.4.23             a8c3d87a58e7        10 months ago       35.3MB
-docker/kube-compose-api-server       v0.4.23             f3591b2cb223        10 months ago       49.9MB
-k8s.gcr.io/coredns                   1.3.1               eb516548c180        15 months ago       40.3MB
-k8s.gcr.io/etcd                      3.3.10              2c4adeb21b4f        17 months ago       258MB
-k8s.gcr.io/pause                     3.1                 da86e6ba6ca1        2 years ago         742kB			
-</pre></code>
+##Install minikube and deploy image
+### Reasons to install minikube on virtual box
+* Kubernetes inside Docker Desktop does not include dashboard
+* Minikube installation for driver docker has a bug, that after installing the service it cannot be reached outside minikube (connection refused)
+* Alternative it hyper-v stopped after minikube: start with errors 
 
+### Install kubectl:
+* Download kubectl.exe
+<br> curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.18.0/bin/windows/amd64/kubectl.exe
+* Add the path of kubectl.exe to PATH (instead of folder in c:/Users/<your profile> create folder like this: C:\Program Files\kubectl)
+* Run following command in console: kubectl version --client
+* Create kubernetes config file 
+<br> 	create empty file kubeconfig in a not write protected folder, e.g. in your user folders
+<br> 	create Windows variable KUBECONFIG with path INCLUDING file name: E.g. KUBECONFIG=c:\Users\jkirchner\minikube_config\kubeconfig
+
+### Install minikube
+* Stop docker desktop
+<br>	
+* Deactivate Hyper-V properties ...
+<br> 	Windows / Apps&Features --> Activate / Deactivate Windows features
+<br> 	--> Deactivate Hyper-V / Hyper-V-Hypervisor (no further attribute)
+<br> 	--> Restart Windows
+<br>
+* Install VirtualBox
+<br> Download from https://www.virtualbox.org/wiki/Downloads and install and run virtualbox
+<br> Install Minikube - Download https://github.com/kubernetes/minikube/releases/latest/download/minikube-installer.exe and install
+<br>	
+
+### Deploy image
+* Swith kubectl context to minikube
+<br> kubectl config get-contexts
+<br> kubectl config use-context minikube
+<br>
+* Optionally delete existing minikube before new deployment
+<br> minikube delete
+<br>
+* Deploy image in minikube
+<br> minikube start --driver=virtualbox
+<br>(if current version is buggy (e.g. 1.18.0 for Hype-V, not for virtual box) with version: minikube start --kubernetes-version v1.17.0 --driver=virtualbox)
+* Create minikube secret to allow minikube to download image from your repository
+<br> kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username=jo9999ki --docker-password=Werkbank#1 --docker-email=jochen_kirchner@yahoo.com 
+<br>
+* Create yaml file to download image and create 3 pods + service for external access with port 30001
+<pre><code>
+	apiVersion: apps/v1
+	kind: Deployment
+	metadata: 
+	  name: v1
+	spec: 
+	  replicas: 3 
+	  selector: 
+		matchLabels: 
+		  app: v1-label 
+	  template: 
+		metadata: 
+		  labels: 
+			app: v1-label 
+		spec: 
+		  containers: 
+		  - name: v1-container 
+			image: jo9999ki/firsttrial:v1
+			ports: 
+			- containerPort: 8080 
+		  imagePullSecrets: 
+		  - name: regcred 
+	--- 
+	apiVersion: v1
+	kind: Service
+	metadata: 
+	  name: v1-service
+	spec: 
+	  selector: 
+		app: v1-label
+	  ports: 
+	  - protocol: TCP 
+		port: 8080 
+		nodePort: 30001 
+	  type: NodePort  
+</pre></code>
+* Update minikube with yaml file:
+<br> kubectl apply -f C:\Users\jkirchner\minikube_config\firsttrial.yml
+<br>
+* Check download image is complete and container/pods are created
+<br> kubectl get pods
+<br> kubect describe pod <pod-name>
+<br>
+* Check service state and external port
+<br> kubectl get services
+<br> kubectl describe services/<service-name>
+<br>
+* Check outside access to app
+<br> - Show service host and port: minikube service v1-service  --url
+<br> - test app in console: curl <host>:<port>/customers
+<br> - start app in browser: minikube service v1-service; enhance url: <host>:<port>/swagger-ui.html
+<br>
+* Show dashboard in browser
+<br> minikube dashboard 
+ 
+### Problem analysis
+* Check service state: 
+<br> --> kubectl get services
+<br> --> kubectl describe services/<service-name>
+<br>
+* Check pod status
+<br> --> kubectl get pods
+<br> --> kubectl get pods -l app=v1
+<br> --> kubectl describe pods
+<br>
+* Check app in single pod
+<br> --> kubectl exec -ti <pod-name> curl localhost:8080/customers
+<br> --> kubectl logs <pod-name>
+<br> --> kubectl exec -ti <pod-name> bash
+<br> 	--> work with UNIX commands (e.g. cat <filename> --> end bash with "exit"
+<br>
+* Check minikube logs
+<br> --> minikube logs --problems		
+<br> 
+### Scale deployment to amount of pods
+<br> kubectl scale deployments/v1 --replicas=4
+			
 # Links
 * [Spring Boot Actuator: Production-ready Features](https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-features.html)
 * [Micrometer: Spring Boot 2's new application metrics collector](https://spring.io/blog/2018/03/16/micrometer-spring-boot-2-s-new-application-metrics-collector)
