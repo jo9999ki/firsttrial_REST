@@ -259,7 +259,7 @@ public class TestController
 * Activate Hyper-V properties, if not already done by Docker installation. Same needed after Virtual Box usage
 <br> Open Windows / Apps&Features Activate / Deactivate Windows features
 <br> Activate Hyper-V --> Hyper-V-Services + Hyper-V-Hypervisor	
-<br>		
+		
 * Create community docker repository on Docker Hub
 <br> Create account in https://hub.docker.com/ and confirm email by mail
 <br> create private docker repository (one private repository possible for community account)
@@ -268,7 +268,7 @@ public class TestController
 docker push &lt;username&gt;/&lt;repositoryname&gt;:&lt;tagname&gt;, 
 e.g. docker push jo9999ki/firsttrial:tagname
 </pre></code>
-<br>
+
 * Create a simple docker file "Dockerfile" in application root folder
 <pre><code>
 FROM adoptopenjdk/openjdk11:alpine-jre
@@ -280,12 +280,12 @@ COPY ${JAR_FILE} /app.jar
 ENTRYPOINT exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar 
 </pre></code>
 <br> Major impact for created image is the jdk image used in FROM ... statement (here reduced from 686 to 204 MB). See alternatives here: https://www.dropbox.com/s/19mhkxmix8iztx2/openjdk_tags_2019-06-24.csv?dl=0
-<br>
+
 * Build image from docker file: docker "build <username>/<repositoryname>:<tagname> ." e.g. "docker build --tag jo9999ki/firsttrial:v1 ."
 <br>(Take care, that " ." is included)
-<br>
+
 * Check image size for created image: docker image ls
-<br>
+
 * Deploy and test image on Docker Desktop -internal and external port = 8080
 <pre><code>
 docker run -d -p 8080:8080 --rm --name &lt;tagname&gt; &lt;username&gt;/&lt;repositoryname&gt;:&lt;tagname&gt;
@@ -294,7 +294,7 @@ e.g. docker run -d -p 8080:8080 --rm --name v1 jo9999ki/firsttrial:v1
 <br>Test swagger file: http://localhost:8080/swagger-ui.html
 <br> open local session for installed image: docker run -ti --entrypoint /bin/sh jo9999ki/firsttrial:v1
 <br>Delete deployment: docker kill <tagname> -> docker kill v1
-<br>
+
 * Push image to Docker hub repository
 <br> Login in with repository user: "docker login - u <username>", e.g. "docker login -u jo9999ki" --> enter password
 <br> Push image: "docker push <username>/<repositoryname>:<tagname>", e.g. "docker push jo9999ki/firsttrial:v1"
@@ -315,29 +315,30 @@ e.g. docker run -d -p 8080:8080 --rm --name v1 jo9999ki/firsttrial:v1
 <br> 	create Windows variable KUBECONFIG with path INCLUDING file name: E.g. KUBECONFIG=c:\Users\jkirchner\minikube_config\kubeconfig
 
 ### Install minikube
-* Stop docker desktop
-<br>	
+* Stop docker desktop	
 * Deactivate Hyper-V properties ...
 <br> 	Windows / Apps&Features --> Activate / Deactivate Windows features
 <br> 	--> Deactivate Hyper-V / Hyper-V-Hypervisor (no further attribute)
 <br> 	--> Restart Windows
-<br>
 * Install VirtualBox
 <br> Download from https://www.virtualbox.org/wiki/Downloads and install and run virtualbox
 <br> Install Minikube - Download https://github.com/kubernetes/minikube/releases/latest/download/minikube-installer.exe and install
-<br>	
 
 ### Deploy image
 * Swith kubectl context to minikube
 <br> kubectl config get-contexts
 <br> kubectl config use-context minikube
+
 * Optionally delete existing minikube before new deployment
 <br> minikube delete
+
 * Deploy image in minikube
 <br> minikube start --driver=virtualbox
 <br>(if current version is buggy (e.g. 1.18.0 for Hype-V, not for virtual box) with version: minikube start --kubernetes-version v1.17.0 --driver=virtualbox)
+
 * Create minikube secret to allow minikube to download image from your repository
 <br> kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username=jo9999ki --docker-password=Werkbank#1 --docker-email=jochen_kirchner@yahoo.com 
+
 * Create yaml file to download image and create 3 pods + service for external access with port 30001
 <pre><code>
 	apiVersion: apps/v1
@@ -375,19 +376,23 @@ e.g. docker run -d -p 8080:8080 --rm --name v1 jo9999ki/firsttrial:v1
 		nodePort: 30001 
 	  type: NodePort  
 </pre></code>
+
 * Update minikube with yaml file:
 <br> kubectl apply -f C:\Users\jkirchner\minikube_config\firsttrial.yml
-<br>
+
 * Check download image is complete and container/pods are created
 <br> kubectl get pods
 <br> kubect describe pod <pod-name>
+
 * Check service state and external port
 <br> kubectl get services
 <br> kubectl describe services/<service-name>
+
 * Check outside access to app
 <br> - Show service host and port: minikube service v1-service  --url
 <br> - test app in console: curl <host>:<port>/customers
 <br> - start app in browser: minikube service v1-service; enhance url: <host>:<port>/swagger-ui.html
+
 * Show dashboard in browser
 <br> minikube dashboard 
  
@@ -395,18 +400,21 @@ e.g. docker run -d -p 8080:8080 --rm --name v1 jo9999ki/firsttrial:v1
 * Check service state: 
 <br> --> kubectl get services
 <br> --> kubectl describe services/<service-name>
+
 * Check pod status
 <br> --> kubectl get pods
 <br> --> kubectl get pods -l app=v1
 <br> --> kubectl describe pods
+
 * Check app in single pod
 <br> --> kubectl exec -ti <pod-name> curl localhost:8080/customers
 <br> --> kubectl logs <pod-name>
 <br> --> kubectl exec -ti <pod-name> bash
 <br> 	--> work with UNIX commands (e.g. cat <filename> --> end bash with "exit"
+
 * Check minikube logs
 <br> --> minikube logs --problems		
-<br> 
+
 ### Scale deployment to amount of pods
 <br> kubectl scale deployments/v1 --replicas=4
 			
