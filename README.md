@@ -281,7 +281,7 @@ COPY ${JAR_FILE} /app.jar
 <br>
 ENTRYPOINT exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar 
 </pre></code>
-<br> Major impact for created image is the jdk image used in FROM ... statement (here reduced from 686 to 204 MB). See alternatives here: https://www.dropbox.com/s/19mhkxmix8iztx2/openjdk_tags_2019-06-24.csv?dl=0
+<br> Major impact for size of created image is the jdk image used in FROM ... statement (here reduced from 686 to 204 MB). See alternatives here: https://www.dropbox.com/s/19mhkxmix8iztx2/openjdk_tags_2019-06-24.csv?dl=0
 
 * Build image from docker file: docker "build <username>/<repositoryname>:<tagname> ." e.g. "docker build --tag jo9999ki/firsttrial:v1 ."
 <br>(Take care, that " ." is included)
