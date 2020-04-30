@@ -331,16 +331,13 @@ e.g. docker run -d -p 8080:8080 --rm --name v1 jo9999ki/firsttrial:v1
 * Swith kubectl context to minikube
 <br> kubectl config get-contexts
 <br> kubectl config use-context minikube
-<br>
 * Optionally delete existing minikube before new deployment
 <br> minikube delete
-<br>
 * Deploy image in minikube
 <br> minikube start --driver=virtualbox
 <br>(if current version is buggy (e.g. 1.18.0 for Hype-V, not for virtual box) with version: minikube start --kubernetes-version v1.17.0 --driver=virtualbox)
 * Create minikube secret to allow minikube to download image from your repository
 <br> kubectl create secret docker-registry regcred --docker-server=https://index.docker.io/v1/ --docker-username=jo9999ki --docker-password=Werkbank#1 --docker-email=jochen_kirchner@yahoo.com 
-<br>
 * Create yaml file to download image and create 3 pods + service for external access with port 30001
 <pre><code>
 	apiVersion: apps/v1
@@ -384,16 +381,13 @@ e.g. docker run -d -p 8080:8080 --rm --name v1 jo9999ki/firsttrial:v1
 * Check download image is complete and container/pods are created
 <br> kubectl get pods
 <br> kubect describe pod <pod-name>
-<br>
 * Check service state and external port
 <br> kubectl get services
 <br> kubectl describe services/<service-name>
-<br>
 * Check outside access to app
 <br> - Show service host and port: minikube service v1-service  --url
 <br> - test app in console: curl <host>:<port>/customers
 <br> - start app in browser: minikube service v1-service; enhance url: <host>:<port>/swagger-ui.html
-<br>
 * Show dashboard in browser
 <br> minikube dashboard 
  
@@ -401,18 +395,15 @@ e.g. docker run -d -p 8080:8080 --rm --name v1 jo9999ki/firsttrial:v1
 * Check service state: 
 <br> --> kubectl get services
 <br> --> kubectl describe services/<service-name>
-<br>
 * Check pod status
 <br> --> kubectl get pods
 <br> --> kubectl get pods -l app=v1
 <br> --> kubectl describe pods
-<br>
 * Check app in single pod
 <br> --> kubectl exec -ti <pod-name> curl localhost:8080/customers
 <br> --> kubectl logs <pod-name>
 <br> --> kubectl exec -ti <pod-name> bash
 <br> 	--> work with UNIX commands (e.g. cat <filename> --> end bash with "exit"
-<br>
 * Check minikube logs
 <br> --> minikube logs --problems		
 <br> 
