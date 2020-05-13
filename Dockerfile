@@ -8,6 +8,7 @@ COPY ${JAR_FILE} /app.jar
 
 ENTRYPOINT exec java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /app.jar 
 
+## docker build --tag jo9999ki/firsttrial:v1 .
 ## docker image ls
 ## docker run -d -p 8080:8080 --rm --name v1 jo9999ki/firsttrial:v1
 ## docker run -d -p 80:8080 --rm --name v1 jo9999ki/firsttrial:v1
